@@ -1,5 +1,6 @@
 import pandas as pd
 import cv2 as cv
+import math
 
 # Import csv using pandas
 colors_csv = pd.read_csv(r'C:\Users\mattg\OneDrive\Desktop\Data_Science_Projects\Color_Detection\colors.csv', header = None)
@@ -15,7 +16,7 @@ def select_color(event, x, y, flags, param):
         clicked = True
         xpos = x
         ypos = y
-        r, g, b = img[y,x]
+        b, g, r = img[y,x]
         r = int(r)
         g = int(g)
         b = int(b)
@@ -23,8 +24,8 @@ def select_color(event, x, y, flags, param):
 def getColorName(R,G,B):
     min = 10000
     for i in range(len(colors_csv)):
-        distance = abs(R - int(colors_csv.loc[i, 'R'])) + abs(G - int(colors_csv.loc[i, 'G'])) + abs(B - int(colors_csv.loc[i, 'B']))
-        if distance <= min:
+        distance = math.sqrt(((R - int(colors_csv.loc[i, 'R']))**2 + (G - int(colors_csv.loc[i, 'G']))**2 + (B - int(colors_csv.loc[i, 'B']))**2))
+        if distance < min:
             min = distance
             colorname = colors_csv.loc[i, 'Color Name']
     return colorname
@@ -39,7 +40,7 @@ cv.setMouseCallback('Vegetables', select_color)
 while (1):
     cv.imshow('Vegetables', img)
     if (clicked):
-        cv.rectangle(img, (20,20), (750,60), (r,g,b), -1)   
+        cv.rectangle(img, (20,20), (750,60), (b,g,r), -1)   
         # Create a text string for display + RGB numbers
         text = getColorName(r,g,b) +  ' R = ' + str(r) + ' G = ' + str(g) + ' B = ' + str(b)
         #                     start  font fontScale color thickness lineType
